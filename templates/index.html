@@ -1,45 +1,55 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Study Planner</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Study Planner</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+
 <div class="container">
-    <h1>Study Planner</h1>
+  <h1>📚 Study Planner</h1>
 
-    <form action="/add" method="post">
-        <input type="text" name="subject" placeholder="Subject" required>
-        <input type="text" name="task" placeholder="Task" required>
-        <input type="date" name="date" required>
-        <input type="time" name="time" required>
-        <input type="number" name="hours" placeholder="Hours" required>
-        <button type="submit">Add Task</button>
-    </form>
+  <form method="POST">
+    <input type="text" name="subject" placeholder="Subject" required>
+    <input type="text" name="task" placeholder="Task" required>
+    <input type="date" name="date" required>
+    <input type="time" name="time" required>
+    <input type="number" name="hours" placeholder="Hours" required>
+    <button type="submit">Add Task</button>
+  </form>
 
-    <h3>Tasks</h3>
-    <ul>
-        {% for t in tasks %}
-        <li>{{ t.subject }} - {{ t.task }} ({{ t.date }} {{ t.time }}, {{ t.hours }} hrs)</li>
-        {% endfor %}
-    </ul>
+  <h3>Your Tasks</h3>
+  <ul>
+    {% for t in tasks %}
+      <li class="{{ 'done' if t.completed else '' }}">
+        {{ t.subject }} - {{ t.task }} ({{ t.date }} {{ t.time }}, {{ t.hours }} hrs)
+
+        {% if not t.completed %}
+          <a href="/complete/{{ loop.index0 }}" class="complete">✔</a>
+        {% endif %}
+        <a href="/delete/{{ loop.index0 }}" class="delete">✖</a>
+      </li>
+    {% endfor %}
+  </ul>
 </div>
 
 <script>
-  const tasks = {{ tasks|tojson }};
+const tasks = {{ tasks | tojson }};
 
-  tasks.forEach(task => {
-    const taskDateTime = new Date(task.date + "T" + task.time);
-    const now = new Date();
-    const diff = taskDateTime - now;
+tasks.forEach(task => {
+  const taskTime = new Date(task.date + "T" + task.time);
+  const now = new Date();
+  const diff = taskTime - now;
 
-    if (diff > 0) {
-      setTimeout(() => {
-        alert("Reminder: " + task.subject + " - " + task.task);
-      }, diff);
-    }
-  });
+  if (diff > 0) {
+    setTimeout(() => {
+      alert("Reminder: " + task.subject + " - " + task.task);
+    }, diff);
+  }
+});
 </script>
 
 </body>
 </html>
+
