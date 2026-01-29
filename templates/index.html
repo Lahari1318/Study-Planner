@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Study Planner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>Study Planner</h1>
+
+    <form action="/add" method="post">
+        <input type="text" name="subject" placeholder="Subject" required>
+        <input type="text" name="task" placeholder="Task" required>
+        <input type="date" name="date" required>
+        <input type="time" name="time" required>
+        <input type="number" name="hours" placeholder="Hours" required>
+        <button type="submit">Add Task</button>
+    </form>
+
+    <h3>Tasks</h3>
+    <ul>
+        {% for t in tasks %}
+        <li>{{ t.subject }} - {{ t.task }} ({{ t.date }} {{ t.time }}, {{ t.hours }} hrs)</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+  const tasks = {{ tasks|tojson }};
+
+  tasks.forEach(task => {
+    const taskDateTime = new Date(task.date + "T" + task.time);
+    const now = new Date();
+    const diff = taskDateTime - now;
+
+    if (diff > 0) {
+      setTimeout(() => {
+        alert("Reminder: " + task.subject + " - " + task.task);
+      }, diff);
+    }
+  });
+</script>
+
+</body>
+</html>
